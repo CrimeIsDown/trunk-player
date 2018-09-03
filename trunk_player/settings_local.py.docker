@@ -1,0 +1,59 @@
+# Local devel Settings
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LOCAL_SETTINGS = True
+
+DEBUG = False
+
+ALLOWED_HOSTS = ['*']
+
+# Make this unique, and don't share it with anybody.
+# You can use http://www.miniwebtool.com/django-secret-key-generator/
+# to create one.
+SECRET_KEY = 'gv*f9ntgqmj8fqp+=ycx)v%6*o*#k1v25*a_gmrla3y*yy@*!0'
+
+# Name for site
+SITE_TITLE = 'Trunk-Player'
+SITE_EMAIL = 'help@example.com'
+DEFAULT_FROM_EMAIL='Trunk-Player WebSite <scanner-web-help@example.com>'
+
+# Set this to the location of your audio files
+AUDIO_URL_BASE = '//s3.amazonaws.com/SET-TO-MY-BUCKET/'
+
+# Allow TalkGroup access restrictions
+ACCESS_TG_RESTRICT = False
+
+# Postgres database setup
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres', # Database Name
+        'USER': 'postgres', # Database User Name
+        #'PASSWORD': '', # Database User Password
+        'HOST': 'postgres',
+        'PORT': 5432,
+    }
+}
+
+# Channel settings
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "asgi_redis.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get('REDIS_URL', 'redis://redis:6379')],
+        },
+        "ROUTING": "radio.routing.channel_routing",
+    },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+SECURE_PROXY_SSL_HEADER = ()

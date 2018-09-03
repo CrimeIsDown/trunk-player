@@ -1,0 +1,64 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:9-alpine
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:3-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - cache-data:/data
+    ports:
+      - "6379:6379"
+  nginx:
+    build: ./docker/nginx
+    image: trunk-player-nginx
+    volumes:
+      - ./audio_files:/var/www/audio_files
+      - ./static:/var/www/static
+      - ./icons:/var/www/icons
+    depends_on:
+      - channelworker
+    ports:
+      - "8000:80"
+  channelworker:
+    build:
+      context: .
+      dockerfile: ./docker/django/Dockerfile
+    image: trunk-player-django
+    command: python3 manage.py runworker
+    volumes:
+      - ./audio_files:/app/audio_files
+    depends_on:
+      - postgres
+      - redis
+  channelserver:
+    build:
+      context: .
+      dockerfile: ./docker/django/Dockerfile
+    image: trunk-player-django
+    command: daphne -u /tmp/daphne.sock -b 0.0.0.0 -p 7055 trunk_player.asgi:channel_layer
+    volumes:
+      - ./audio_files:/app/audio_files
+    depends_on:
+      - postgres
+      - redis
+  addtransmissionworker:
+    build:
+      context: .
+      dockerfile: ./docker/django/Dockerfile
+    image: trunk-player-django
+    command: python3 manage.py add_transmission_worker
+    volumes:
+      - ./audio_files:/app/audio_files
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  db-data:
+  cache-data:

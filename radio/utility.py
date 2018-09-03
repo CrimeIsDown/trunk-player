@@ -1,10 +1,11 @@
+import os
 import redis
 
 class RedisQueue(object):
     """Simple Queue with Redis Backend"""
     def __init__(self, name, namespace='tp', **redis_kwargs):
        """The default connection parameters are: host='localhost', port=6379, db=0"""
-       self.__db= redis.Redis(**redis_kwargs)
+       self.__db = redis.Redis.from_url(os.environ.get('REDIS_URL', 'redis://redis:6379'), **redis_kwargs)
        self.key = '%s:%s' %(namespace, name)
 
     def qsize(self):
