@@ -15,12 +15,12 @@ services:
     ports:
       - "6379:6379"
   nginx:
-    build: ./docker/nginx
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
     image: trunk-player-nginx
     volumes:
       - ./audio_files:/var/www/audio_files
-      - ./static:/var/www/static
-      - ./icons:/var/www/icons
     depends_on:
       - channelworker
     ports:
