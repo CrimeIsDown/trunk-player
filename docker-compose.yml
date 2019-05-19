@@ -23,7 +23,7 @@ services:
     depends_on:
       - channelworker
     ports:
-      - "80"
+      - "8080:80"
   channelworker:
     restart: always
     build:
