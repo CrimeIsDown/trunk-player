@@ -2,19 +2,18 @@ version: '3'
 
 services:
   postgres:
+    restart: always
     image: postgres:9-alpine
     volumes:
       - db-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
   redis:
+    restart: always
     image: redis:3-alpine
     command: redis-server --appendonly yes
     volumes:
       - cache-data:/data
-    ports:
-      - "6379:6379"
   nginx:
+    restart: always
     build:
       context: .
       dockerfile: ./docker/nginx/Dockerfile
@@ -24,8 +23,9 @@ services:
     depends_on:
       - channelworker
     ports:
-      - "8000:80"
+      - "80"
   channelworker:
+    restart: always
     build:
       context: .
       dockerfile: ./docker/django/Dockerfile
@@ -38,6 +38,7 @@ services:
       - postgres
       - redis
   channelserver:
+    restart: always
     build:
       context: .
       dockerfile: ./docker/django/Dockerfile
